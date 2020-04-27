@@ -20,28 +20,43 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-class MyHomePage extends StatelessWidget {
+
+class MyHomePage extends StatefulWidget {
+  @override
+  _MyHomePageState createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
   final textController = TextEditingController();
   List<TaskModel> tasks = [];
+  TaskModel currentTask;
+
   @override
   Widget build(BuildContext context) {
+    final TodoHelper _helper = TodoHelper();
     return Scaffold(
       body: Container(
         padding: EdgeInsets.all(32),
         child: Column(
           children: <Widget>[
             TextField(controller: textController,),
-          FlatButton(
-            child: Text("Insert"),
-            onPressed: (){
-              
-            },
-            color: Colors.blue,
-            textColor: Colors.white,
-          ),
+            FlatButton(
+              child: Text("Insert"),
+              onPressed: (){
+                currentTask = TaskModel(name: textController.text);
+                _helper.insertTask(currentTask).then((value) => print("saved successful")).catchError((onError)=> print(onError));
+              },
+              color: Colors.blue,
+              textColor: Colors.white,
+            ),
             FlatButton(
               child: Text("Show All Task"),
-              onPressed: (){},
+              onPressed: () async{
+                List<TaskModel> list = await _helper.getAllTask();
+                setState(() {
+                  tasks = list;
+                });
+              },
               color: Colors.red,
               textColor: Colors.white,
             ),

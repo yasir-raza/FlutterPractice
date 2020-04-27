@@ -18,11 +18,14 @@ class TaskModel{
 
 class TodoHelper {
   Database db;
+  TodoHelper(){
+    initDatabase();
+  }
   Future<void>initDatabase() async{
     db = await openDatabase(
-        join(await getDatabasesPath(), "my_db.db"),
+        join(await getDatabasesPath(), "test.db"),
         onCreate: (db, version){
-          return db.execute("CREATE TABLE $tableName($columnId AUTO INREMENT PRIMARY KEY, $columnName TEXT)");
+          return db.execute("CREATE TABLE $tableName($columnId INTEGER PRIMARY KEY AUTOINCREMENT, $columnName TEXT)");
         },
         version: 1
     );
@@ -38,7 +41,7 @@ class TodoHelper {
   Future<List<TaskModel>> getAllTask() async{
     final List<Map<String, dynamic>> tasks = await db.query(tableName);
 
-    List.generate(tasks.length, (i){
+    return List.generate(tasks.length, (i){
       return TaskModel(name: tasks[i][columnName], id: tasks[i][columnId]);
     });
   }
